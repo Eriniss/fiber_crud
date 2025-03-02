@@ -12,4 +12,6 @@ func UserRoutes(app *fiber.App) {
 	api.Get("/users", handlers.GetAllUsers)
 	api.Get("/user/:id", handlers.GetUser)
 	api.Post("/user", handlers.CreateUser)
+	api.Put("/user/:id", handlers.UpdateUser)
+	api.Delete("/user/:id", handlers.DeleteUser)
 }
