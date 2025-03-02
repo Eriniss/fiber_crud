@@ -32,6 +32,7 @@
 - main.go 파일 생성
 - fiber/v3, gorm, sqlite3 의존성 패키지 설치
 - 범용적으로 사용되는 gorm 드라이버 사용
+- .env 파일을 사용하기 위해 godotenv 패키지 추가
 
 ## 2. 로그인(User) DB 모델 구현
 
@@ -64,6 +65,9 @@
 - handlers 내 user를 컨트롤 할 수 있는 미들웨어 작성
 - fiber.Ctx가 기본적으로 사용되며 앞서 작성한 gorm.DB 패키지를 이용하여 sqlite3 데이터베이스 제어 가능
 - fiber.Ctx 내 JSON 메서드를 사용하면 json 형태로 데이터 입/출력 가능
+- 단일 User 생성 API 에서 email 중복 불가 기능 추가
+- 단일 User 생성 API 에서 crypto를 이용하여 password의 sha-256 해시 저장 기능 추가
+- 단일 User 생성 API 에서 salt 기능 추가. salt는 .env 파일에서 해당 값을 가져와 생성
 
 ## 4. 라우트 작성
 

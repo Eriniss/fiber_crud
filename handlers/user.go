@@ -40,6 +40,12 @@ func CreateUser(c fiber.Ctx) error {
 		return c.Status(400).JSON(fiber.Map{"error": "Invalid input"})
 	}
 
+	// 이메일 중복 여부 확인
+	var existingUser models.User
+	if err := database.DB.Where("email = ?", user.Email).First(&existingUser).Error; err == nil {
+		return c.Status(409).JSON(fiber.Map{"error": "Email already exists"})
+	}
+
 	database.DB.Create(&user)
 	return c.JSON(fiber.Map{"message": "User created", "user": user})
 }
