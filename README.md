@@ -6,6 +6,7 @@
 
 ## 2. 로그인 DB 모델 구현
 - SQLite Users
+
 |id|create_at|updated_at|deleted_at|email|password|role|
 |---|---|---|---|---|---|---|---|
 |int|date|date|date|string|string|string|int|
