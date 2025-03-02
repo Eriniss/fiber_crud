@@ -62,12 +62,16 @@
 
 ### handlers 패키지 생성
 
-- handlers 내 user를 컨트롤 할 수 있는 미들웨어 작성
+- handlers 내 user를 컨트롤할 수 있는 미들웨어 작성
 - fiber.Ctx가 기본적으로 사용되며 앞서 작성한 gorm.DB 패키지를 이용하여 sqlite3 데이터베이스 제어 가능
 - fiber.Ctx 내 JSON 메서드를 사용하면 json 형태로 데이터 입/출력 가능
+- 생성, 수정, 삭제 API의 경우, params에서 id값을 가져와 데이터를 매핑
 - 단일 User 생성 API 에서 email 중복 불가 기능 추가
 - 단일 User 생성 API 에서 crypto를 이용하여 password의 sha-256 해시 저장 기능 추가
 - 단일 User 생성 API 에서 salt 기능 추가. salt는 .env 파일에서 해당 값을 가져와 생성
+- 단일 User 수정 API 내 Save() 메서드 대신, Update() 메서드를 사용하여 업데이트 오작동 시 새로운 계정이 생성되는 현상 방지
+- 단일 User 삭제 API는 Soft Delete 방식을 사용(deleted_at에 날짜가 추가되는 방식). 즉, 데이터가 직접적으로 삭제되지 않는 방식
+- 단일 User 삭제 API 에서 이미 deleted 처리된 ID에 다시 삭제를 시도할 경우 에러를 반환하도록 수정
 
 ## 4. 라우트 작성
 

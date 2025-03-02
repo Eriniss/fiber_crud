@@ -1,6 +1,8 @@
 package handlers
 
 import (
+	"crypto/sha256"
+	"encoding/hex"
 	"fiber_curd/database"
 	"fiber_curd/models"
 
@@ -18,12 +20,13 @@ func GetAllUsers(c fiber.Ctx) error {
 
 // id값을 바탕으로 특정 User 조회
 func GetUser(c fiber.Ctx) error {
-	// 라우트에 설정된 /:id 값을 가져와 변수에 할당
+	// 라우트에 설정된 /:id 값을 가져와 변수에 할당(파라미터에서 값 추출)
 	id := c.Params("id")
 	var user models.User
 
-	result := database.DB.First(&user, id)
-	if result.Error != nil {
+	// 추출된 id값을 바탕으로 DB 검색
+	// 최초 검색된 데이터(First 메서드) result에 저장
+	if err := database.DB.First(&user, id).Error; err != nil {
 		return c.Status(404).JSON(fiber.Map{"error": "User not found"})
 	}
 
@@ -36,6 +39,7 @@ func CreateUser(c fiber.Ctx) error {
 	// 이미 있는 경우 User 콜렉션 매핑
 	user := new(models.User)
 
+	// 입력값을 바인딩
 	if err := c.Bind().Body(user); err != nil {
 		return c.Status(400).JSON(fiber.Map{"error": "Invalid input"})
 	}
@@ -46,7 +50,15 @@ func CreateUser(c fiber.Ctx) error {
 		return c.Status(409).JSON(fiber.Map{"error": "Email already exists"})
 	}
 
-	database.DB.Create(&user)
+	// 비밀번호 SHA-256 해시 적용
+	hashedPassword := sha256.Sum256([]byte(user.Password)) // SHA-256 해시 생성
+	user.Password = hex.EncodeToString(hashedPassword[:])  // 해시값을 hex 문자열로 변환
+
+	// 사용자 데이터베이스에 저장
+	if err := database.DB.Create(&user).Error; err != nil {
+		return c.Status(500).JSON(fiber.Map{"error": "Failed to create user"})
+	}
+
 	return c.JSON(fiber.Map{"message": "User created", "user": user})
 }
 
