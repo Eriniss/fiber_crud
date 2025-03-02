@@ -1,12 +1,16 @@
 package main
 
 import (
+	"fiber_curd/database"
 	"log"
 
 	"github.com/gofiber/fiber/v3"
 )
 
 func main() {
+	// 초기 데이터베이스 생성 및 초기화
+	database.InitDatabase()
+
 	// Fiber 앱 생성
 	app := fiber.New()
 
