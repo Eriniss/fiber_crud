@@ -11,8 +11,7 @@ import (
 
 // 단일 User 생성
 func CreateUser(c fiber.Ctx) error {
-	// database.db 내 User 콜렉션 새롭게 생성
-	// 이미 있는 경우 User 콜렉션 매핑
+	// users 콜렉션 매핑
 	user := new(models.User)
 
 	// 입력값을 바인딩

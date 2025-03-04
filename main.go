@@ -28,6 +28,7 @@ func main() {
 
 	// 라우트 설정
 	routes.UserRoutes(app)
+	routes.BlogRoutes(app)
 
 	// 서버 실행
 	log.Println("🚀 Server's hot in 3000 port!")

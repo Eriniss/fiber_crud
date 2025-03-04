@@ -8,13 +8,13 @@ import (
 type Reply struct {
 	gorm.Model
 
-	PostID   uint   `json:"post_id"` // Post와 관계를 형성하는 외래 키
+	PostID   uint   `json:"post_id"` // Blog와 관계를 형성하는 외래 키
 	Email    string `json:"email"`
 	Contents string `json:"contents"`
 }
 
 // Post (게시글) 모델
-type Post struct {
+type Blog struct {
 	gorm.Model
 
 	Email    string   `json:"email"`

@@ -22,6 +22,9 @@ func InitDatabase() {
 	}
 
 	// 데이터베이스 마이그레이션
+	// 데이터베이스가 없을 경우 자동으로 추가
 	DB.AutoMigrate(&models.User{})
+	DB.AutoMigrate(&models.Blog{})
+
 	log.Println("📌 Database migration completed!")
 }
