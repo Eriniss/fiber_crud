@@ -7,7 +7,7 @@ import (
 	"github.com/gofiber/fiber/v3"
 )
 
-// 단일 Posts 수정
+// 단일 Posts 삭제
 func DeletePost(c fiber.Ctx) error {
 	id := c.Params("id")
 	var post models.Blog
