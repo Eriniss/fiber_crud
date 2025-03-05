@@ -12,4 +12,6 @@ func BlogRoutes(app *fiber.App) {
 	api.Post("/post", blog.CreatePost)
 	api.Get("/posts", blog.GetAllPosts)
 	api.Get("/post/:id", blog.GetPost)
+	api.Put("/post/:id", blog.UpdatePost)
+	api.Delete("/post/:id", blog.DeletePost)
 }
