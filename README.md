@@ -61,7 +61,7 @@
 - 단일 User 삭제(D)
 
 ### handlers 패키지 생성
-
+- **User**
 - handlers 내 user를 컨트롤할 수 있는 미들웨어 작성
 - fiber.Ctx가 기본적으로 사용되며 앞서 작성한 gorm.DB 패키지를 이용하여 sqlite3 데이터베이스 제어 가능
 - fiber.Ctx 내 JSON 메서드를 사용하면 json 형태로 데이터 입/출력 가능
@@ -73,6 +73,12 @@
 - 단일 User 삭제 API는 Soft Delete 방식을 사용(deleted_at에 날짜가 추가되는 방식). 즉, 데이터가 직접적으로 삭제되지 않는 방식
 - 단일 User 삭제 API 에서 이미 deleted 처리된 ID에 다시 삭제를 시도할 경우 에러를 반환하도록 수정
 
+- **Blog**
+- Blog 키워드를 사용하며, 각각의 글에는 Post라는 공통된 변수 사용
+- 단일 Post 생성 API 에서 reply와 tag는 빈값 허용
+- Post 내 댓글(reply) 작성 API 신규 작성 예정
+- reply는 Post의 id를 참조하는 외래키를 가지며, 이것으로 댓글을 추가할 수 있음
+
 ## 4. 라우트 작성
 
 ### 생성한 핸들러를 API 엔드포인트와 연결
@@ -81,3 +87,5 @@
 - "/auth" API 그룹 생성
 - 해당 라우트 내에 user handlers 연동하여 테스트
 - API 테스트에 ThunderClient 사용
+- Blog 라우트 신규 생성
+- "/blog" API 그룹 생성
