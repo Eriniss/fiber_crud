@@ -10,4 +10,6 @@ func BlogRoutes(app *fiber.App) {
 	api := app.Group("/blog")
 
 	api.Post("/post", blog.CreatePost)
+	api.Get("/posts", blog.GetAllPosts)
+	api.Get("/post/:id", blog.GetPost)
 }
