@@ -13,7 +13,8 @@ var DB *gorm.DB
 
 func InitDatabase() {
 	// 데이터베이스 url 설정
-	dbPath := os.Getenv("SQLITE3_PATH")
+	// 추후 MariaDB 또는 ProstgreSQL 마이그레이션을 고려하여 변수명 변경
+	dbPath := os.Getenv("DATABASE_PATH")
 
 	var err error
 	DB, err = gorm.Open(sqlite.Open(dbPath), &gorm.Config{})
