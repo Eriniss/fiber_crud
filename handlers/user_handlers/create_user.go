@@ -1,10 +1,9 @@
 package user
 
 import (
-	"crypto/sha256"
-	"encoding/hex"
 	"fiber_curd/database"
 	"fiber_curd/models"
+	"fiber_curd/utils"
 
 	"github.com/gofiber/fiber/v3"
 )
@@ -26,8 +25,7 @@ func CreateUser(c fiber.Ctx) error {
 	}
 
 	// 비밀번호 SHA-256 해시 적용
-	hashedPassword := sha256.Sum256([]byte(user.Password)) // SHA-256 해시 생성
-	user.Password = hex.EncodeToString(hashedPassword[:])  // 해시값을 hex 문자열로 변환
+	user.Password = utils.HashPassword(user.Password)
 
 	// 사용자 데이터베이스에 저장
 	if err := database.DB.Create(&user).Error; err != nil {

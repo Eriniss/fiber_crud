@@ -14,7 +14,7 @@ func GetUser(c fiber.Ctx) error {
 
 	// 추출된 id값을 바탕으로 DB 검색
 	// 최초 검색된 데이터(First 메서드) result에 저장
-	if err := database.DB.First(&user, id).Error; err != nil {
+	if err := database.DB.Omit("password").First(&user, id).Error; err != nil {
 		return c.Status(404).JSON(fiber.Map{"error": "User not found"})
 	}
 

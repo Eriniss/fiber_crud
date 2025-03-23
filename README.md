@@ -94,6 +94,9 @@
 - Blog 라우트 신규 생성
 - "/blog" API 그룹 생성
 
+## 5. 유틸리티 작성
+
+- create_user 내이 있던 sha-256 비밀번호 해시처리 유틸리티 함수 모듈화
 
 ## TodoList
 
