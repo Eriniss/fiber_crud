@@ -18,7 +18,7 @@ func SignInUser(c fiber.Ctx) error {
 
 	var user models.User
 
-	// 이메일로 사용자 검색 (비밀번호 포함)
+	// 이메일로 사용자 검색
 	if err := database.DB.Where("email = ?", loginData.Email).First(&user).Error; err != nil {
 		return c.Status(404).JSON(fiber.Map{"error": "User not found"})
 	}
@@ -29,8 +29,14 @@ func SignInUser(c fiber.Ctx) error {
 		return c.Status(401).JSON(fiber.Map{"error": "Invalid password"})
 	}
 
-	// 비밀번호를 제외하고 응답 반환
-	user.Password = "" // 비밀번호 수동 삭제 (또는 아예 구조체에서 비밀번호 필드 제외)
+	// 비밀번호를 제외하고 응답 데이터 준비
+	user.Password = "" // 비밀번호 필드 삭제
+
+	// JWT 토큰 생성
+	token, err := utils.GenerateJWT(user.ID, user.Email, user.Role)
+	if err != nil {
+		return c.Status(500).JSON(fiber.Map{"error": "Failed to generate token"})
+	}
 
 	return c.JSON(fiber.Map{
 		"message": "Login successful",
@@ -39,5 +45,6 @@ func SignInUser(c fiber.Ctx) error {
 			"email": user.Email,
 			"role":  user.Role,
 		},
+		"token": token, // JWT 토큰 반환
 	})
 }
