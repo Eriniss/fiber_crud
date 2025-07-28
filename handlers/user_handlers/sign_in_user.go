@@ -30,10 +30,10 @@ func SignInUser(c fiber.Ctx) error {
 	}
 
 	// 비밀번호를 제외하고 응답 데이터 준비
-	user.Password = "" // 비밀번호 필드 삭제
+	user.Password = "" // 비밀번호 필드 삭제 후 반환
 
 	// JWT 토큰 생성
-	token, err := utils.GenerateJWT(user.ID, user.Email, user.Role)
+	token, err := utils.GenerateJWT(user.ID, user.Email, user.Role, user.Point)
 	if err != nil {
 		return c.Status(500).JSON(fiber.Map{"error": "Failed to generate token"})
 	}

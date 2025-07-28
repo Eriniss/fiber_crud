@@ -9,7 +9,7 @@ import (
 )
 
 // JWT 토큰 생성
-func GenerateJWT(userId uint, email string, role uint) (string, error) {
+func GenerateJWT(userId uint, email string, role string, point uint) (string, error) {
 	// 비밀 키 가져오기
 	secretKey := os.Getenv("JWT_SECRET_KEY")
 
@@ -22,6 +22,7 @@ func GenerateJWT(userId uint, email string, role uint) (string, error) {
 		"id":    userId,
 		"email": email,
 		"role":  role,
+		"point": point,
 		"exp":   time.Now().Add(24 * time.Hour).Unix(), // 24시간 후 만료 설정
 	}
 
