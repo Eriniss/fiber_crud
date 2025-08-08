@@ -9,7 +9,8 @@ type User struct {
 
 	Email    string `gorm:"unique" json:"email"` // 이메일
 	Password string `json:"password"`            // Password는 json 객체 반환에서
-	Role     string `json:"role"`                // 역할. admin, user
+	Name     string `json:"name"`                // 이름.
+	Group    string `json:"group"`               // 역할. admin, user
 	Gender   string `json:"gender"`              // 성별. male, female
-	Point    uint   `json:"point"`               // 점수.
+	Point    int    `json:"point"`               // 점수.
 }
