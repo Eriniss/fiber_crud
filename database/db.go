@@ -13,7 +13,7 @@ var DB *gorm.DB
 func InitDatabase() {
 	// 데이터베이스 url 설정
 	// 추후 MariaDB 또는 ProstgreSQL 마이그레이션을 고려하여 변수명 변경
-	dbPath := "/Users/jhs2195/Desktop/fiber_crud/database.db"
+	dbPath := "../database.db"
 	log.Printf("[DB] Connecting to: %s", dbPath)
 
 	var err error
