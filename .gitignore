@@ -2,7 +2,7 @@
 .env
 
 # SQLite 데이터베이스 제외
-database.db
+# database.db
 
 # 서버 빌드파일 제외
 fiber_crud
