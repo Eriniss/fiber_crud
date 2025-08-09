@@ -9,9 +9,11 @@ import (
 
 // 모든 Users 조회
 func GetAllUsers(c fiber.Ctx) error {
-	// 단일 객체가 아닐때는 []를 앞에 표시하여 슬라이스 형태로 반환
 	var users []models.User
-	database.DB.Omit("password").First(&users)
+	// password 필드 제외하고 전체 조회
+	if err := database.DB.Omit("password").Find(&users).Error; err != nil {
+		return c.Status(500).JSON(fiber.Map{"error": "Failed to retrieve users"})
+	}
 
 	return c.JSON(users)
 }
