@@ -7,6 +7,7 @@ toolchain go1.24.6
 require (
 	github.com/gofiber/fiber/v3 v3.0.0-beta.5
 	github.com/golang-jwt/jwt/v4 v4.5.2
+	github.com/joho/godotenv v1.5.1
 	gorm.io/driver/sqlite v1.5.7
 	gorm.io/gorm v1.25.12
 )
