@@ -1,9 +1,9 @@
 package user
 
 import (
-	"fiber_curd/database"
-	"fiber_curd/models"
-	"fiber_curd/utils"
+	"fiber_crud/database"
+	"fiber_crud/models"
+	"fiber_crud/utils"
 	"log"
 
 	"github.com/gofiber/fiber/v3"

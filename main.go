@@ -1,8 +1,8 @@
 package main
 
 import (
-	"fiber_curd/database"
-	"fiber_curd/routes"
+	"fiber_crud/database"
+	"fiber_crud/routes"
 	"log"
 	"os"
 

@@ -1,7 +1,7 @@
 package routes
 
 import (
-	blog "fiber_curd/handlers/blog_handlers"
+	blog "fiber_crud/handlers/blog_handlers"
 
 	"github.com/gofiber/fiber/v3"
 )

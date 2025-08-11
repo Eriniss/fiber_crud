@@ -1,7 +1,7 @@
 package routes
 
 import (
-	user "fiber_curd/handlers/user_handlers"
+	user "fiber_crud/handlers/user_handlers"
 
 	"github.com/gofiber/fiber/v3"
 )

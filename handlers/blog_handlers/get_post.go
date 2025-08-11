@@ -1,8 +1,8 @@
 package blog
 
 import (
-	"fiber_curd/database"
-	"fiber_curd/models"
+	"fiber_crud/database"
+	"fiber_crud/models"
 
 	"github.com/gofiber/fiber/v3"
 )

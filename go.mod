@@ -1,4 +1,4 @@
-module fiber_curd
+module fiber_crud
 
 go 1.24.0
 

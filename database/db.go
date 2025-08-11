@@ -1,7 +1,7 @@
 package database
 
 import (
-	"fiber_curd/models"
+	"fiber_crud/models"
 	"log"
 	"os"
 
