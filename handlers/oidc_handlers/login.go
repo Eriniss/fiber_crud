@@ -1,31 +1,58 @@
 package oidc
 
 import (
+	"crypto/rand"
+	"encoding/base64"
 	"os"
 
 	"github.com/gofiber/fiber/v3"
 )
 
+// State 토큰 생성 (CSRF 방어)
+func generateStateToken() (string, error) {
+	b := make([]byte, 32)
+	_, err := rand.Read(b)
+	if err != nil {
+		return "", err
+	}
+	return base64.URLEncoding.EncodeToString(b), nil
+}
+
 // OIDC 로그인 리다이렉트
 // Logto 로그인 페이지로 리다이렉트
 func LoginRedirect(c fiber.Ctx) error {
-	// Logto 설정 가져오기
-	logtoEndpoint := os.Getenv("LOGTO_ENDPOINT")
-	logtoAppId := os.Getenv("LOGTO_APP_ID")
-	redirectUri := os.Getenv("LOGTO_REDIRECT_URI")
-
-	if logtoEndpoint == "" || logtoAppId == "" || redirectUri == "" {
-		return c.Status(500).JSON(fiber.Map{
-			"error": "OIDC configuration is missing",
+	// OIDC가 활성화되어 있는지 확인
+	if !IsOIDCEnabled() {
+		return c.Status(503).JSON(fiber.Map{
+			"error": "OIDC is not configured",
+			"note":  "Please configure LOGTO_ENDPOINT, LOGTO_APP_ID, and LOGTO_APP_SECRET in .env",
 		})
 	}
 
-	// OIDC 인증 URL 생성
-	// TODO: 실제 Logto SDK 또는 OIDC 라이브러리 사용 시 구현
-	authURL := logtoEndpoint + "/oidc/auth?client_id=" + logtoAppId + "&redirect_uri=" + redirectUri + "&response_type=code&scope=openid profile email"
+	// State 토큰 생성
+	state, err := generateStateToken()
+	if err != nil {
+		return c.Status(500).JSON(fiber.Map{
+			"error": "Failed to generate state token",
+		})
+	}
 
+	// State를 쿠키에 저장 (CSRF 방어)
+	c.Cookie(&fiber.Cookie{
+		Name:     "oauth_state",
+		Value:    state,
+		HTTPOnly: true,
+		Secure:   os.Getenv("ENVIRONMENT") == "production",
+		SameSite: "Lax",
+		MaxAge:   600, // 10분
+	})
+
+	// OAuth2 Authorization URL 생성
+	authURL := GetOAuth2Config().AuthCodeURL(state)
+
+	// 프론트엔드에 URL 반환
 	return c.JSON(fiber.Map{
 		"auth_url": authURL,
-		"message":  "Redirect to this URL for OIDC login",
+		"message":  "Redirect user to this URL for OIDC login",
 	})
 }

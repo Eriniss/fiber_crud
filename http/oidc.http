@@ -1,0 +1,93 @@
+### 환경 변수 로드
+@baseUrl = http://localhost:8080
+
+###############################################
+# OIDC API (Logto 소셜 로그인)
+###############################################
+#
+# ⚠️ 주의: OIDC 기능은 현재 구조만 준비된 상태입니다.
+# 실제로 동작하려면 Logto 설정이 필요합니다.
+#
+# 설정 방법:
+# 1. Logto 콘솔에서 애플리케이션 생성
+# 2. .env 파일에 다음 환경변수 추가:
+#    - LOGTO_ENDPOINT
+#    - LOGTO_APP_ID
+#    - LOGTO_APP_SECRET
+#    - LOGTO_REDIRECT_URI
+# 3. 서버 재시작
+#
+###############################################
+
+### 1. OIDC 로그인 시작
+# Logto 인증 URL을 반환합니다
+# 브라우저에서 해당 URL로 접속하여 로그인하세요
+GET {{baseUrl}}/oidc/login
+
+### 2. OIDC 콜백 (수동 테스트용)
+# 실제로는 Logto에서 자동으로 리다이렉트됩니다
+# 테스트용으로 인증 코드를 직접 전달할 수 있습니다
+GET {{baseUrl}}/oidc/callback?code=test_auth_code_12345
+
+### 3. OIDC 로그아웃
+POST {{baseUrl}}/oidc/logout
+Content-Type: application/json
+
+###############################################
+# OIDC 로그인 흐름 (예정)
+###############################################
+#
+# 1. 클라이언트가 GET /oidc/login 호출
+#    → 서버가 Logto 인증 URL 반환
+#
+# 2. 사용자가 Logto 로그인 페이지로 이동
+#    → 이메일/소셜 계정으로 로그인
+#
+# 3. Logto가 /oidc/callback?code=xxx로 리다이렉트
+#    → 서버가 인증 코드를 토큰으로 교환
+#    → 사용자 정보 조회
+#    → 로컬 DB에 사용자 생성/조회
+#    → JWT 토큰 발급
+#
+# 4. 클라이언트가 JWT 토큰 받음
+#    → 이후 일반 API와 동일하게 사용
+#
+###############################################
+
+### 예상 응답 (구현 후)
+#
+# GET /oidc/login 응답:
+# {
+#   "auth_url": "https://your-logto.logto.app/oidc/auth?client_id=...",
+#   "message": "Redirect to this URL for OIDC login"
+# }
+#
+# GET /oidc/callback?code=xxx 응답 (구현 후):
+# {
+#   "message": "Login successful",
+#   "user": {
+#     "id": 1,
+#     "email": "user@example.com",
+#     "name": "홍길동",
+#     ...
+#   },
+#   "token": "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9..."
+# }
+#
+###############################################
+
+###############################################
+# 브라우저 테스트 방법
+###############################################
+#
+# OIDC는 브라우저 리다이렉트를 사용하므로
+# REST Client보다 브라우저에서 테스트하는 것이 좋습니다:
+#
+# 1. GET /oidc/login으로 auth_url 받기
+# 2. 브라우저에서 auth_url 열기
+# 3. Logto에서 로그인
+# 4. 콜백으로 돌아와서 토큰 확인
+#
+# 또는 Postman의 OAuth 2.0 기능 사용 가능
+#
+###############################################

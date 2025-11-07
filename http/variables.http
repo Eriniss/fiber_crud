@@ -1,0 +1,18 @@
+### REST Client 환경 변수
+### 이 파일의 변수들은 다른 .http 파일에서 사용됩니다
+
+# API Base URL
+@baseUrl = http://localhost:8080
+
+# JWT 토큰 (로그인 후 여기에 복사하세요)
+@token = your-jwt-token-here
+
+# 테스트용 사용자 정보
+@testEmail = test@example.com
+@testPassword = TestPass123!
+@testName = 테스트유저
+
+# 관리자 테스트 계정
+@adminEmail = admin@example.com
+@adminPassword = AdminPass123!
+@adminName = 관리자
