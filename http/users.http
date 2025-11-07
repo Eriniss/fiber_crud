@@ -1,0 +1,226 @@
+### 환경 변수 로드
+@baseUrl = http://localhost:8080
+@token = your-jwt-token-here
+
+###############################################
+# 사용자 관리 API (Protected - 토큰 필요)
+###############################################
+#
+# ⚠️ 주의: 먼저 auth.http에서 로그인하고 토큰을 받으세요!
+# 받은 토큰을 위의 @token 변수에 붙여넣으세요.
+#
+###############################################
+
+### 1. 모든 사용자 조회
+GET {{baseUrl}}/auth/users
+Authorization: Bearer {{token}}
+
+### 2. 특정 사용자 조회 (ID: 1)
+GET {{baseUrl}}/auth/user/1
+Authorization: Bearer {{token}}
+
+### 3. 특정 사용자 조회 (ID: 2)
+GET {{baseUrl}}/auth/user/2
+Authorization: Bearer {{token}}
+
+###############################################
+# 사용자 정보 수정
+###############################################
+
+### 4. 사용자 이름 수정
+PUT {{baseUrl}}/auth/user/1
+Authorization: Bearer {{token}}
+Content-Type: application/json
+
+{
+  "name": "김철수"
+}
+
+### 5. 사용자 그룹 변경
+PUT {{baseUrl}}/auth/user/1
+Authorization: Bearer {{token}}
+Content-Type: application/json
+
+{
+  "group": "admin"
+}
+
+### 6. 여러 필드 한번에 수정
+PUT {{baseUrl}}/auth/user/1
+Authorization: Bearer {{token}}
+Content-Type: application/json
+
+{
+  "name": "이영희",
+  "group": "user",
+  "gender": "female"
+}
+
+### 7. 비밀번호 변경
+PUT {{baseUrl}}/auth/user/1
+Authorization: Bearer {{token}}
+Content-Type: application/json
+
+{
+  "password": "NewSecurePass456!"
+}
+
+###############################################
+# 포인트 관리 (누적 방식)
+###############################################
+
+### 8. 포인트 추가 (+50)
+# 기존 포인트가 100이면 → 150으로 변경됨
+PUT {{baseUrl}}/auth/user/1
+Authorization: Bearer {{token}}
+Content-Type: application/json
+
+{
+  "point": 50
+}
+
+### 9. 포인트 차감 (-30)
+# 기존 포인트가 150이면 → 120으로 변경됨
+PUT {{baseUrl}}/auth/user/1
+Authorization: Bearer {{token}}
+Content-Type: application/json
+
+{
+  "point": -30
+}
+
+### 10. 대량 포인트 추가 (+1000)
+PUT {{baseUrl}}/auth/user/1
+Authorization: Bearer {{token}}
+Content-Type: application/json
+
+{
+  "point": 1000
+}
+
+###############################################
+# 사용자 삭제 (Soft Delete)
+###############################################
+
+### 11. 사용자 삭제 (ID: 3)
+# Soft Delete 방식: deleted_at 필드만 업데이트됨
+DELETE {{baseUrl}}/auth/user/3
+Authorization: Bearer {{token}}
+
+### 12. 사용자 삭제 (ID: 2)
+DELETE {{baseUrl}}/auth/user/2
+Authorization: Bearer {{token}}
+
+###############################################
+# 에러 케이스 테스트
+###############################################
+
+### 13. 인증 실패 - 토큰 없음
+GET {{baseUrl}}/auth/users
+
+### 14. 인증 실패 - 잘못된 토큰
+GET {{baseUrl}}/auth/users
+Authorization: Bearer invalid-token-here
+
+### 15. 사용자 조회 실패 - 존재하지 않는 ID
+GET {{baseUrl}}/auth/user/999
+Authorization: Bearer {{token}}
+
+### 16. 수정 실패 - 이메일 변경 시도 (금지됨)
+PUT {{baseUrl}}/auth/user/1
+Authorization: Bearer {{token}}
+Content-Type: application/json
+
+{
+  "email": "newemail@example.com"
+}
+
+### 17. 수정 실패 - 비밀번호 강도 미달
+PUT {{baseUrl}}/auth/user/1
+Authorization: Bearer {{token}}
+Content-Type: application/json
+
+{
+  "password": "weak"
+}
+
+### 18. 삭제 실패 - 이미 삭제된 사용자
+# 먼저 ID 3을 삭제한 후 다시 삭제 시도
+DELETE {{baseUrl}}/auth/user/3
+Authorization: Bearer {{token}}
+
+### 19. 삭제 실패 - 존재하지 않는 사용자
+DELETE {{baseUrl}}/auth/user/999
+Authorization: Bearer {{token}}
+
+###############################################
+# 복합 시나리오 테스트
+###############################################
+
+### 20. 시나리오: 사용자 생성 후 즉시 조회
+# Step 1: 회원가입 (auth.http에서)
+# Step 2: 로그인 및 토큰 획득
+# Step 3: 자신의 정보 조회
+GET {{baseUrl}}/auth/user/1
+Authorization: Bearer {{token}}
+
+### 21. 시나리오: 포인트 여러 번 적립
+# 초기 포인트: 0
+# +100
+PUT {{baseUrl}}/auth/user/1
+Authorization: Bearer {{token}}
+Content-Type: application/json
+
+{
+  "point": 100
+}
+
+###
+# +50
+PUT {{baseUrl}}/auth/user/1
+Authorization: Bearer {{token}}
+Content-Type: application/json
+
+{
+  "point": 50
+}
+
+###
+# -20 (사용)
+PUT {{baseUrl}}/auth/user/1
+Authorization: Bearer {{token}}
+Content-Type: application/json
+
+{
+  "point": -20
+}
+
+###
+# 최종 결과 확인 (130 포인트여야 함)
+GET {{baseUrl}}/auth/user/1
+Authorization: Bearer {{token}}
+
+###############################################
+# 사용 팁
+###############################################
+#
+# 포인트 시스템:
+# - 포인트는 누적 방식입니다 (덮어쓰기 아님)
+# - 양수: 포인트 추가
+# - 음수: 포인트 차감
+# - 예: 100 포인트 상태에서 +50 요청 → 150 포인트
+#
+# 이메일 변경:
+# - 보안상 이유로 이메일은 변경할 수 없습니다
+# - 시도 시 403 Forbidden 에러 반환
+#
+# Soft Delete:
+# - 삭제된 사용자는 조회되지 않습니다
+# - 하지만 DB에는 남아있어 복구 가능합니다
+# - deleted_at 필드에 삭제 시간이 기록됩니다
+#
+# 토큰 만료:
+# - JWT 토큰은 24시간 후 만료됩니다
+# - 만료 시 다시 로그인하여 새 토큰을 받으세요
+#
+###############################################

@@ -1,0 +1,144 @@
+### 환경 변수 로드
+@baseUrl = http://localhost:8080
+
+###############################################
+# 인증 API (Public - 토큰 불필요)
+###############################################
+
+### 1. 회원가입 - 기본 사용자
+POST {{baseUrl}}/auth/user
+Content-Type: application/json
+
+{
+  "email": "user1@example.com",
+  "password": "SecurePass123!",
+  "name": "홍길동",
+  "group": "user",
+  "gender": "male",
+  "point": 0
+}
+
+### 2. 회원가입 - 관리자
+POST {{baseUrl}}/auth/user
+Content-Type: application/json
+
+{
+  "email": "admin@example.com",
+  "password": "AdminPass123!",
+  "name": "관리자",
+  "group": "admin",
+  "gender": "female",
+  "point": 100
+}
+
+### 3. 회원가입 - 최소 필드만
+POST {{baseUrl}}/auth/user
+Content-Type: application/json
+
+{
+  "email": "minimal@example.com",
+  "password": "MinimalPass123!"
+}
+
+### 4. 로그인 - user1
+POST {{baseUrl}}/auth/sign_in
+Content-Type: application/json
+
+{
+  "email": "user1@example.com",
+  "password": "SecurePass123!"
+}
+
+### 5. 로그인 - admin
+POST {{baseUrl}}/auth/sign_in
+Content-Type: application/json
+
+{
+  "email": "admin@example.com",
+  "password": "AdminPass123!"
+}
+
+###############################################
+# 에러 케이스 테스트
+###############################################
+
+### 6. 회원가입 실패 - 이메일 형식 오류
+POST {{baseUrl}}/auth/user
+Content-Type: application/json
+
+{
+  "email": "invalid-email",
+  "password": "SecurePass123!"
+}
+
+### 7. 회원가입 실패 - 비밀번호 강도 미달 (대문자 없음)
+POST {{baseUrl}}/auth/user
+Content-Type: application/json
+
+{
+  "email": "weak@example.com",
+  "password": "weakpass123!"
+}
+
+### 8. 회원가입 실패 - 비밀번호 강도 미달 (특수문자 없음)
+POST {{baseUrl}}/auth/user
+Content-Type: application/json
+
+{
+  "email": "weak2@example.com",
+  "password": "WeakPass123"
+}
+
+### 9. 회원가입 실패 - 비밀번호 길이 부족
+POST {{baseUrl}}/auth/user
+Content-Type: application/json
+
+{
+  "email": "short@example.com",
+  "password": "Sh0rt!"
+}
+
+### 10. 회원가입 실패 - 이메일 중복
+POST {{baseUrl}}/auth/user
+Content-Type: application/json
+
+{
+  "email": "user1@example.com",
+  "password": "AnotherPass123!"
+}
+
+### 11. 로그인 실패 - 존재하지 않는 사용자
+POST {{baseUrl}}/auth/sign_in
+Content-Type: application/json
+
+{
+  "email": "notexist@example.com",
+  "password": "SomePass123!"
+}
+
+### 12. 로그인 실패 - 잘못된 비밀번호
+POST {{baseUrl}}/auth/sign_in
+Content-Type: application/json
+
+{
+  "email": "user1@example.com",
+  "password": "WrongPass123!"
+}
+
+###############################################
+# 사용 팁
+###############################################
+#
+# 1. 위에서 아래로 순서대로 실행하세요
+# 2. 회원가입 후 로그인하면 JWT 토큰을 받습니다
+# 3. 받은 토큰을 복사하여 variables.http의 @token에 붙여넣으세요
+# 4. 그런 다음 users.http에서 인증이 필요한 API를 테스트할 수 있습니다
+#
+# 예시 응답:
+# {
+#   "message": "Login successful",
+#   "user": { ... },
+#   "token": "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9..."
+# }
+#
+###############################################
