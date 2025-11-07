@@ -26,10 +26,8 @@ func SignInUser(c fiber.Ctx) error {
 		return c.Status(404).JSON(fiber.Map{"error": "User not found"})
 	}
 
-	// 입력된 비밀번호를 해시 후 비교
-	hashedPassword := utils.HashPassword(loginData.Password)
-
-	if hashedPassword != user.Password {
+	// 입력된 비밀번호를 bcrypt로 검증
+	if err := utils.VerifyPassword(user.Password, loginData.Password); err != nil {
 		return c.Status(401).JSON(fiber.Map{"error": "Invalid password"})
 	}
 

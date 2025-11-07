@@ -1,103 +1,178 @@
-# 개발 계획
+# Fiber CRUD API
 
-## 1. 사용 스택
+사용자 인증 및 관리를 위한 REST API 서버
 
-- fiber/v3
-- sqlite3
-- gorm driver
+## 기술 스택
 
-## 2. 파일 구조
+- **웹 프레임워크**: Fiber v3
+- **데이터베이스**: SQLite3 + GORM
+- **인증**: JWT + bcrypt
+- **OIDC**: Logto (준비 완료)
 
-- multi-repo 형식 사용
-- 데이터베이스의 콜렉션을 기준으로 모듈화
-- ex: user, blog 등
+## 주요 기능
 
-## 3. 기능 명세
+### 보안 기능
+- ✅ bcrypt를 사용한 안전한 비밀번호 해싱
+- ✅ JWT 기반 인증 시스템
+- ✅ JWT 검증 미들웨어
+- ✅ 이메일 형식 검증
+- ✅ 비밀번호 강도 검증 (최소 8자, 대소문자, 숫자, 특수문자 포함)
+- ✅ 환경변수를 통한 보안 설정 관리
+- ✅ CORS 설정
 
-- 로그인
-    - User 역할별 차등 기능 구현(0, 1, 2)
-    - 비밀번호 변경 기능 구현
-    - 이메일 인증 기능 구현
-    - Google oauth 2.0을 구현한 소셜 로그인 구현
+### 사용자 관리
+- ✅ 회원가입 및 로그인
+- ✅ 사용자 조회 (전체/개별)
+- ✅ 사용자 정보 수정
+- ✅ 사용자 삭제 (Soft Delete)
+- ✅ 이메일 중복 검증
+- ✅ 이메일 변경 방지 (보안)
 
-- 블로그
-    - CRUD 기능 구현
+### OIDC 준비 (Logto)
+- ✅ OIDC 로그인 리다이렉트 엔드포인트
+- ✅ OIDC 콜백 핸들러 구조
+- ✅ OIDC 로그아웃 엔드포인트
 
+## 설치 및 실행
 
-# 개발자 노트
+### 1. 환경 설정
 
-## 1. 초기 설정
-- main.go 파일 생성
-- fiber/v3, gorm, sqlite3 의존성 패키지 설치
-- 범용적으로 사용되는 gorm 드라이버 사용
-- .env 파일을 사용하기 위해 godotenv 패키지 추가
+`.env.example` 파일을 `.env`로 복사하고 필요한 값을 설정하세요:
 
-## 2. 로그인(User) DB 모델 구현
+```bash
+cp .env.example .env
+```
 
-### SQLite Users
+필수 환경변수:
+- `API_PORT`: 서버 포트 (기본값: 8080)
+- `DATABASE_PATH`: SQLite 데이터베이스 파일 경로
+- `JWT_SECRET_KEY`: JWT 서명용 비밀 키 (강력한 랜덤 문자열 사용)
+- `ALLOWED_ORIGINS`: CORS 허용 오리진
 
-| id  | create_at | updated_at | deleted_at | email  | password | role |
-| --- | --------- | ---------- | ---------- | ------ | -------- | ---- |
-| int | date      | date       | date       | string | string   | int  |
+선택 환경변수 (Logto OIDC 사용 시):
+- `LOGTO_ENDPOINT`
+- `LOGTO_APP_ID`
+- `LOGTO_APP_SECRET`
+- `LOGTO_REDIRECT_URI`
 
-- **email**: 이메일  
-- **password**: 비밀번호  
-- **role**: 유저의 권한 설정
+### 2. 의존성 설치
 
-- gorm.Open() 메서드를 사용하여 "database.db" 파일을 오픈. 없을 시 자동 생성
-- gorm.DB.AutoMigrate() 메서드를 사용하여 *User 모델을 매핑
-- database 모듈의 InitDatabase() 함수가 초기 데이터베이스 생성
+```bash
+go mod download
+```
 
-## 3. 핸들러(미들웨어) 작성
+### 3. 서버 실행
 
-### 목표 handlers 기능
+```bash
+go run main.go
+```
 
-- 모든 User 조회(R)
-- 단일 User 조회(R)
-- 단일 User 생성(C)
-- 단일 User 수정(U)
-- 단일 User 삭제(D)
+## API 엔드포인트
 
-### handlers 패키지 생성
-- **User**
-- handlers 내 user를 컨트롤할 수 있는 미들웨어 작성
-- fiber.Ctx가 기본적으로 사용되며 앞서 작성한 gorm.DB 패키지를 이용하여 sqlite3 데이터베이스 제어 가능
-- fiber.Ctx 내 JSON 메서드를 사용하면 json 형태로 데이터 입/출력 가능
-- 생성, 수정, 삭제 API의 경우, params에서 id값을 가져와 데이터를 매핑
-- 단일 User 생성 API 에서 email 중복 불가 기능 추가
-- 단일 User 생성 API 에서 crypto를 이용하여 password의 sha-256 해시 저장 기능 추가
-- 단일 User 생성 API 에서 salt 기능 추가. salt는 .env 파일에서 해당 값을 가져와 생성
-- 단일 User 수정 API 내 Save() 메서드 대신, Update() 메서드를 사용하여 업데이트 오작동 시 새로운 계정이 생성되는 현상 방지
-- 단일 User 삭제 API는 Soft Delete 방식을 사용(deleted_at에 날짜가 추가되는 방식). 즉, 데이터가 직접적으로 삭제되지 않는 방식
-- 단일 User 삭제 API 에서 이미 deleted 처리된 ID에 다시 삭제를 시도할 경우 에러를 반환하도록 수정
+### 인증 불필요 (Public)
 
-- jwt 토큰을 통한 로그인 구현
-- 로그인과 회원가입을 제외한 모든 기능에서 jwt 토큰을 헤더에 담은 후 요청해야 정상 작동하도록 수정
+| Method | Endpoint | 설명 |
+|--------|----------|------|
+| POST | `/auth/user` | 회원가입 |
+| POST | `/auth/sign_in` | 로그인 |
 
-- **Blog**
-- Blog 키워드를 사용하며, 각각의 글에는 Post라는 공통된 변수 사용
-- 단일 Post 생성 API 에서 reply와 tag는 빈값 허용
-- Post 내 댓글(reply) 작성 API 신규 작성 예정
-- reply는 Post의 id를 참조하는 외래키를 가지며, 이것으로 댓글을 추가할 수 있음
-- 대부분의 CRUD 구조가 User와 비슷
+### 인증 필요 (Protected)
 
-## 4. 라우트 작성
+모든 요청에 `Authorization: Bearer <token>` 헤더 필요
 
-### 생성한 핸들러를 API 엔드포인트와 연결
+| Method | Endpoint | 설명 |
+|--------|----------|------|
+| GET | `/auth/users` | 모든 사용자 조회 |
+| GET | `/auth/user/:id` | 특정 사용자 조회 |
+| PUT | `/auth/user/:id` | 사용자 정보 수정 |
+| DELETE | `/auth/user/:id` | 사용자 삭제 |
 
-- routes 패키지 생성
-- "/auth" API 그룹 생성
-- 해당 라우트 내에 user handlers 연동하여 테스트
-- API 테스트에 ThunderClient 사용
-- Blog 라우트 신규 생성
-- "/blog" API 그룹 생성
+### OIDC (Logto)
 
-## 5. 유틸리티 작성
+| Method | Endpoint | 설명 |
+|--------|----------|------|
+| GET | `/oidc/login` | OIDC 로그인 시작 |
+| GET | `/oidc/callback` | OIDC 콜백 |
+| POST | `/oidc/logout` | OIDC 로그아웃 |
 
-- create_user 내이 있던 sha-256 비밀번호 해시처리 유틸리티 함수 모듈화
+## 데이터 모델
 
-## TodoList
+### User
 
-- 현재 데이터의 모든 필드값을 수정할 수 있음. -> 특정 데이터 수정/삭제 제한 필요(에를들어, email 변경 못하기 막기 등)
-- 로그인 기능 구현 좀 더 구체화 할 필요 있음. -> JWT 방식으로 구현
-- 
+```go
+type User struct {
+    ID        uint      // 자동 생성
+    CreatedAt time.Time
+    UpdatedAt time.Time
+    DeletedAt *time.Time
+    Email     string    // 고유, 변경 불가
+    Password  string    // bcrypt 해시
+    Name      string
+    Group     string    // admin, user
+    Gender    string    // male, female
+    Point     int
+}
+```
+
+## 보안 고려사항
+
+### 구현된 보안 기능
+1. **비밀번호 보안**: bcrypt (cost: 10) 사용
+2. **JWT 보안**: 환경변수에서 시크릿 키 관리, 24시간 만료
+3. **입력 검증**: 이메일 형식 및 비밀번호 강도 검증
+4. **CORS**: 환경변수로 허용 오리진 관리
+5. **필드 보호**: 이메일 변경 방지
+6. **응답 보안**: 비밀번호 필드 응답에서 제거
+
+### 권장사항
+- 프로덕션 환경에서는 반드시 강력한 `JWT_SECRET_KEY` 사용
+- HTTPS 사용 권장
+- Rate limiting 구현 고려
+- 로그 모니터링 구현 고려
+
+## 프로젝트 구조
+
+```
+fiber_crud/
+├── config/           # 애플리케이션 설정
+├── database/         # DB 초기화 및 연결
+├── handlers/
+│   ├── user_handlers/  # 사용자 관련 핸들러
+│   └── oidc_handlers/  # OIDC 관련 핸들러
+├── middleware/       # JWT 인증 등 미들웨어
+├── models/          # 데이터 모델
+├── routes/          # API 라우팅
+├── utils/           # 유틸리티 (JWT, 해싱, 검증)
+├── main.go          # 애플리케이션 진입점
+├── .env.example     # 환경변수 예제
+└── README.md
+```
+
+## 개발 히스토리
+
+### v2.0 (최신)
+- ✅ 블로그 기능 제거 (사용자 관리에 집중)
+- ✅ SHA-256에서 bcrypt로 마이그레이션
+- ✅ JWT Secret Key 환경변수화
+- ✅ 입력 검증 로직 추가
+- ✅ JWT 인증 미들웨어 구현
+- ✅ CORS 설정 개선
+- ✅ Logto OIDC 연동 준비
+
+### v1.0
+- 기본 CRUD 구현
+- JWT 토큰 기반 로그인
+- SQLite + GORM 연동
+
+## 다음 개발 계획
+
+- [ ] Logto SDK 통합 및 OIDC 완전 구현
+- [ ] Rate limiting 미들웨어
+- [ ] 로깅 시스템
+- [ ] API 문서 자동화 (Swagger)
+- [ ] 단위 테스트 작성
+- [ ] 역할 기반 권한 제어 (RBAC)
+
+## 라이선스
+
+MIT

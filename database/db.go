@@ -23,7 +23,7 @@ func InitDatabase() {
 	}
 
 	// 마이그레이션
-	if err := DB.AutoMigrate(&models.User{}, &models.Blog{}); err != nil {
+	if err := DB.AutoMigrate(&models.User{}); err != nil {
 		log.Fatal("📌 Database migration failed:", err)
 	}
 
