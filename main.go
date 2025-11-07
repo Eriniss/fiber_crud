@@ -2,6 +2,7 @@ package main
 
 import (
 	"fiber_crud/database"
+	oidc "fiber_crud/handlers/oidc_handlers"
 	"fiber_crud/routes"
 	"log"
 	"os"
@@ -38,6 +39,14 @@ func main() {
 
 	// DB 초기화
 	database.InitDatabase()
+
+	// OIDC Provider 초기화
+	if err := oidc.InitOIDCProvider(); err != nil {
+		log.Printf("⚠️  Warning: OIDC initialization failed: %v", err)
+		log.Println("OIDC features will be disabled. Server will continue without OIDC.")
+	} else {
+		log.Println("✅ OIDC Provider initialized successfully")
+	}
 
 	// 라우트 설정
 	routes.UserRoutes(app)
