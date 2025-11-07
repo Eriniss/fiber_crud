@@ -718,9 +718,49 @@ fiber_crud/
 - JWT 토큰 기반 로그인
 - SQLite + GORM 연동
 
+## Logto OIDC 통합 가이드
+
+Logto를 통한 소셜 로그인 및 사용자 관리를 구현하려면 다음 문서를 참고하세요:
+
+### 📚 통합 문서
+- **[빠른 시작 가이드](docs/LOGTO_QUICKSTART.md)** - 5분 안에 시작하기
+- **[통합 가이드](docs/LOGTO_INTEGRATION.md)** - 전체 통합 프로세스
+- **[구현 예시](docs/LOGTO_IMPLEMENTATION_EXAMPLE.md)** - 상세한 코드 예시
+- **[체크리스트](docs/LOGTO_CHECKLIST.md)** - 단계별 체크리스트
+
+### 🎯 통합 요약
+
+1. **Logto 콘솔 설정**
+   - Application 생성 (Traditional Web)
+   - Redirect URIs 설정
+   - Roles 생성 (admin, user)
+
+2. **환경 변수 설정**
+   ```env
+   LOGTO_ENDPOINT=https://beh25r.logto.app
+   LOGTO_APP_ID=your-app-id
+   LOGTO_APP_SECRET=your-app-secret
+   LOGTO_REDIRECT_URI=http://localhost:8080/oidc/callback
+   ```
+
+3. **패키지 설치**
+   ```bash
+   go get github.com/coreos/go-oidc/v3/oidc
+   go get golang.org/x/oauth2
+   ```
+
+4. **코드 구현**
+   - User 모델 확장 (OIDC 필드 추가)
+   - OIDC 핸들러 구현
+   - Role 매핑 로직 구현
+
+자세한 내용은 [docs/LOGTO_QUICKSTART.md](docs/LOGTO_QUICKSTART.md)를 참고하세요.
+
+---
+
 ## 다음 개발 계획
 
-- [ ] Logto SDK 통합 및 OIDC 완전 구현
+- [ ] Logto SDK 통합 및 OIDC 완전 구현 → **[가이드 준비 완료](docs/LOGTO_INTEGRATION.md)**
 - [ ] Rate limiting 미들웨어
 - [ ] 로깅 시스템
 - [ ] API 문서 자동화 (Swagger)
