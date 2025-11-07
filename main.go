@@ -21,11 +21,17 @@ func main() {
 	app := fiber.New()
 
 	// CORS 설정
+	allowedOrigins := os.Getenv("ALLOWED_ORIGINS")
+	if allowedOrigins == "" {
+		allowedOrigins = "http://localhost:3000" // 기본값
+	}
+
 	app.Use(cors.New(cors.Config{
-		AllowOrigins:     []string{"*"}, // 프론트 주소
+		AllowOrigins:     []string{allowedOrigins},
 		AllowMethods:     []string{"GET", "POST", "PUT", "DELETE", "OPTIONS"},
-		AllowHeaders:     []string{"Origin", "Content-Type", "Accept"},
-		AllowCredentials: false, // 세션/쿠키 쓸 경우 true
+		AllowHeaders:     []string{"Origin", "Content-Type", "Accept", "Authorization"},
+		AllowCredentials: true,
+		MaxAge:           300, // Preflight 요청 캐시 시간 (초)
 	}))
 
 	port := os.Getenv("API_PORT")
@@ -35,7 +41,7 @@ func main() {
 
 	// 라우트 설정
 	routes.UserRoutes(app)
-	routes.BlogRoutes(app)
+	routes.OIDCRoutes(app) // Logto OIDC 인증
 
 	// 서버 실행
 	log.Printf("🚀 Server's hot in %s port!\n", port)
